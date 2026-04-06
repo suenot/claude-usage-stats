@@ -1,0 +1,14 @@
+{
+  "name": "claude-usage-stats",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["core", "backend", "frontend", "cli"],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm run dev -w backend",
+    "dev:frontend": "npm run dev -w frontend",
+    "build": "npm run build -w core && npm run build -w backend && npm run build -w frontend && npm run build -w cli",
+    "collect": "npm run collect -w cli",
+    "cli": "npm run start -w cli"
+  }
+}
