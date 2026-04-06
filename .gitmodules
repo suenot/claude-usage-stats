@@ -3,13 +3,13 @@
 	url = https://github.com/658jjh/claude-usage-tracker.git
 [submodule "core"]
 	path = core
-	url = /tmp/claude-stats-init/core
+	url = https://github.com/suenot/claude-usage-stats-core.git
 [submodule "backend"]
 	path = backend
-	url = /tmp/claude-stats-init/backend
+	url = https://github.com/suenot/claude-usage-stats-backend.git
 [submodule "frontend"]
 	path = frontend
-	url = /tmp/claude-stats-init/frontend
+	url = https://github.com/suenot/claude-usage-stats-frontend.git
 [submodule "cli"]
 	path = cli
-	url = /tmp/claude-stats-init/cli
+	url = https://github.com/suenot/claude-usage-stats-cli.git
