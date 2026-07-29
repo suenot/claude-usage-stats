@@ -28,6 +28,7 @@ interface ModelPrice {
   name: string;
   provider: string;
   contextLength: number | null;
+  hasPricingOverrides: boolean;
   inputPerMillion: number | null;
   outputPerMillion: number | null;
   cacheReadPerMillion: number | null;
@@ -49,9 +50,12 @@ The API must not require local Claude/Codex collection to finish.
 - Add `Models` to the primary navigation after `Projects`.
 - The page is available independently of the local usage summary.
 - Page heading: `Model pricing`.
-- Supporting copy: `Live OpenRouter prices · USD per 1M tokens`.
+- Supporting copy: `Live OpenRouter base prices · USD per 1M tokens`.
 - One search field filters by display name, model ID, or provider.
 - Table columns: Model, Context, Input, Cache read, Cache write, Output.
+- Models whose OpenRouter pricing contains non-empty `overrides` show a
+  `Tiered` badge with an accessible explanation that larger prompts can use a
+  different price.
 - Clicking a numeric column header sorts ascending/descending. Default ordering
   is provider then model name.
 - A local `Refresh prices` action bypasses the browser cache and requests the
@@ -83,6 +87,8 @@ relationship is visible without adding cards or decoration.
 - A first-load upstream failure shows `OpenRouter pricing is unavailable` and
   a `Try again` action.
 - Search with no matches shows `No models match this search`.
+- The page notes that `Tiered` models can cost differently at larger context
+  sizes; it never presents their base row as the only applicable tariff.
 - The global usage `Refresh` action is hidden on the Models page; price refresh
   belongs to the page.
 
@@ -93,4 +99,3 @@ relationship is visible without adding cards or decoration.
 - Backend tests and the full workspace build pass.
 - Browser verification covers navigation, live OpenRouter data, search,
   sorting, refresh, narrow viewport overflow, and console/network errors.
-

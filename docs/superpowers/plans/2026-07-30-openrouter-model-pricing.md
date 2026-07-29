@@ -13,6 +13,8 @@
 - Pricing source is only `https://openrouter.ai/api/v1/models?limit=1000`.
 - Display every returned model; do not filter to models already used locally.
 - Display prices as USD per one million tokens.
+- Treat top-level OpenRouter pricing as base pricing. Mark every model with a
+  non-empty `pricing.overrides` array as `hasPricingOverrides: true`.
 - Preserve numeric zero; represent missing or invalid prices as `null` and render `—`.
 - API contract names are exactly `ModelPrice` and `ModelPricingResponse` from the design.
 - Backend cache TTL is exactly `300_000` milliseconds.
@@ -70,7 +72,8 @@ Create literal fixtures covering:
 
 Assert exact normalized prices `1.25`, `10`, `0.125`, `1.5625`; provider
 `openai`; preserved zeros; `null` missing cache values; deterministic
-provider/name ordering; five-minute cache reuse; `force: true` refetch;
+provider/name ordering; `hasPricingOverrides` for a non-empty overrides array;
+five-minute cache reuse; `force: true` refetch;
 stale fallback after a successful snapshot; and initial failure propagation.
 Inject `fetcher` and `now` into a service factory so tests exercise real cache
 logic without network mocks hidden inside production code.
@@ -156,7 +159,7 @@ precision to distinguish sub-cent cache prices.
 `ModelPricingTable.tsx` must contain:
 
 - Heading `Model pricing`.
-- Copy `Live OpenRouter prices · USD per 1M tokens`.
+- Copy `Live OpenRouter base prices · USD per 1M tokens`.
 - OpenRouter source link and fetched timestamp.
 - Search input with accessible label `Search models`.
 - Result count.
@@ -166,6 +169,8 @@ precision to distinguish sub-cent cache prices.
 - Numeric header buttons with `aria-sort`.
 - Sticky header, right-aligned monospace numbers, provider/model ID secondary
   labels, and a subtle green background on both cache columns.
+- A `Tiered` badge beside models with `hasPricingOverrides: true`, plus a short
+  accessible note explaining that larger prompts can use different prices.
 - Loading skeleton rows; explicit stale badge; retryable first-load error;
   `No models match this search` empty state.
 - Horizontal overflow below desktop widths and visible keyboard focus.
@@ -202,4 +207,3 @@ Compare every requirement in
 the implementation. Report RED/GREEN evidence, changed files, upstream
 assumptions, and any concerns. Do not commit or push; the coordinator owns
 submodule and root commits.
-
