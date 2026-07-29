@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add a separate Models page backed exclusively by the live OpenRouter catalog, with searchable and sortable input, output, cache-read, and cache-write prices.
+**Goal:** Add a routed Models page backed exclusively by live OpenRouter prices, with searchable and sortable input, output, cache-read, and cache-write prices. Show locally used models by default and expose the full catalog through one toggle.
 
 **Architecture:** A focused backend service owns OpenRouter fetching, normalization, five-minute caching, forced refresh, and stale fallback. A thin Hono route exposes the normalized contract. The frontend Models page consumes that contract and owns only presentation, search, and sorting.
 
@@ -11,7 +11,8 @@
 ## Global Constraints
 
 - Pricing source is only `https://openrouter.ai/api/v1/models?limit=1000`.
-- Display every returned model; do not filter to models already used locally.
+- Keep every returned model available, but hide models not used locally by
+  default. `Show all OpenRouter models` reveals the full catalog.
 - Display prices as USD per one million tokens.
 - Treat top-level OpenRouter pricing as base pricing. Mark every model with a
   non-empty `pricing.overrides` array as `hasPricingOverrides: true`.
@@ -24,6 +25,8 @@
 - Follow strict TDD: add tests and observe the expected RED failure before production implementation.
 - UI copy and navigation labels remain English, matching the existing application.
 - Responsive layout, keyboard focus, and semantic table controls are required.
+- Primary pages use `/dashboard`, `/sessions`, `/projects`, and `/models` with
+  direct navigation and browser Back/Forward support.
 
 ---
 
@@ -106,6 +109,8 @@ export function createModelPricingService(deps?: {
 Rules:
 
 - Parse upstream JSON defensively.
+- Treat missing, non-array, malformed, or empty `data` and an empty normalized
+  model list as upstream failures; never cache them as successful snapshots.
 - Convert valid non-negative USD-per-token strings with `value * 1_000_000`.
 - Keep `0`; use `null` for absent, negative, NaN, or infinite values.
 - Use `AbortSignal.timeout(10_000)`.
@@ -154,6 +159,13 @@ null values last in both directions and never mutates the source array.
 `formatPrice(0)` returns `$0`; missing returns `—`; nonzero values retain enough
 precision to distinguish sub-cent cache prices.
 
+Add pure helpers and tests for:
+
+- URL path/tab mapping.
+- Usage-model normalization and matching against OpenRouter IDs.
+- Default used-only filtering and explicit show-all behavior.
+- Filter, sort, immutable input, null-last ordering, and formatting.
+
 - [ ] **Step 6: Build the Models page**
 
 `ModelPricingTable.tsx` must contain:
@@ -162,7 +174,8 @@ precision to distinguish sub-cent cache prices.
 - Copy `Live OpenRouter base prices · USD per 1M tokens`.
 - OpenRouter source link and fetched timestamp.
 - Search input with accessible label `Search models`.
-- Result count.
+- Result count showing filtered and total catalog sizes.
+- `Show all OpenRouter models` toggle, off by default.
 - `Refresh prices` button that requests `refresh=1`.
 - Semantic `<table>` with Model, Context, Input, Cache read, Cache write,
   Output columns.
@@ -170,14 +183,17 @@ precision to distinguish sub-cent cache prices.
 - Sticky header, right-aligned monospace numbers, provider/model ID secondary
   labels, and a subtle green background on both cache columns.
 - A `Tiered` badge beside models with `hasPricingOverrides: true`, plus a short
-  accessible note explaining that larger prompts can use different prices.
+  visible note explaining that larger prompts can use different prices.
 - Loading skeleton rows; explicit stale badge; retryable first-load error;
   `No models match this search` empty state.
 - Horizontal overflow below desktop widths and visible keyboard focus.
 
-Add the `models` tab after `projects` in `App.tsx`. Render this page without
-waiting for `summary`. Hide the global usage `Refresh` button only while the
-Models tab is active.
+Add the `models` route after `projects` in `App.tsx`. Use semantic links and
+History API navigation for `/dashboard`, `/sessions`, `/projects`, and
+`/models`; support direct paths and `popstate`. Render the pricing page without
+waiting for `summary`. Fetch local model usage separately, hide unused models
+by default, and preserve a show-all escape hatch when usage is unavailable.
+Hide the global usage `Refresh` button only while the Models route is active.
 
 - [ ] **Step 7: Build and manually verify GREEN**
 
@@ -192,13 +208,16 @@ git -C frontend diff --check
 
 Then verify in Chrome at `http://localhost:5173`:
 
-- Models navigation opens the page.
+- Models navigation changes the path to `/models`; direct paths and
+  Back/Forward work.
 - The table contains live OpenRouter rows.
 - Search for `claude` filters rows.
 - Input and Cache read headers toggle sort direction.
 - Refresh makes `/api/models/pricing?refresh=1` return 200.
 - No new console errors.
 - At a narrow viewport, the page stays usable via horizontal table scroll.
+- At 320 px, primary navigation remains reachable and the document has no
+  horizontal overflow.
 
 - [ ] **Step 8: Self-review and report**
 

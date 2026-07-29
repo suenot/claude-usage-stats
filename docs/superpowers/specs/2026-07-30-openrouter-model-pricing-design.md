@@ -2,9 +2,9 @@
 
 ## Goal
 
-Add a separate "Models" page that lists the complete live OpenRouter model
-catalog and shows text input, cache read, cache write, and output prices in
-USD per one million tokens.
+Add a separate "Models" page backed by the complete live OpenRouter model
+catalog. By default it shows only models found in local usage and displays text
+input, cache read, cache write, and output prices in USD per one million tokens.
 
 ## Data source
 
@@ -48,10 +48,17 @@ The API must not require local Claude/Codex collection to finish.
 ## Page behavior
 
 - Add `Models` to the primary navigation after `Projects`.
+- Use real browser paths: `/dashboard`, `/sessions`, `/projects`, and `/models`.
+  Direct navigation and browser Back/Forward must work; `/` and unknown paths
+  resolve to the dashboard.
 - The page is available independently of the local usage summary.
 - Page heading: `Model pricing`.
 - Supporting copy: `Live OpenRouter base prices · USD per 1M tokens`.
 - One search field filters by display name, model ID, or provider.
+- Models absent from local usage are hidden by default. A
+  `Show all OpenRouter models` toggle reveals the full catalog. Model matching
+  ignores provider prefixes and punctuation differences while avoiding false
+  matches to batch, fast, or pro variants.
 - Table columns: Model, Context, Input, Cache read, Cache write, Output.
 - Models whose OpenRouter pricing contains non-empty `overrides` show a
   `Tiered` badge with an accessible explanation that larger prompts can use a
@@ -63,6 +70,8 @@ The API must not require local Claude/Codex collection to finish.
 - Loading, empty, stale, and error states are explicit and actionable.
 - The page is keyboard accessible, horizontally scrollable on narrow screens,
   and keeps the table header visible while scrolling.
+- At 320 px, the document itself must not overflow horizontally and every
+  primary navigation item must remain reachable.
 
 ## Visual direction
 
@@ -84,6 +93,8 @@ relationship is visible without adding cards or decoration.
 ## Failure and freshness
 
 - `stale: true` is shown as `Cached snapshot` with the original fetch time.
+- Empty or malformed HTTP 200 payloads are failures and never replace a valid
+  cached snapshot.
 - A first-load upstream failure shows `OpenRouter pricing is unavailable` and
   a `Try again` action.
 - Search with no matches shows `No models match this search`.
@@ -95,7 +106,8 @@ relationship is visible without adding cards or decoration.
 ## Verification
 
 - TDD covers price conversion, missing cache fields, zero prices, sorting,
-  five-minute cache reuse, forced refresh, and stale fallback.
+  five-minute cache reuse, forced refresh, stale fallback, route readiness,
+  URL mapping, local-model matching, and default used-only filtering.
 - Backend tests and the full workspace build pass.
 - Browser verification covers navigation, live OpenRouter data, search,
   sorting, refresh, narrow viewport overflow, and console/network errors.
