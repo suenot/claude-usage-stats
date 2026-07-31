@@ -20,9 +20,9 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=web
-      - traefik.http.routers.harness-analyzer-api.rule=Host(`harness-analyzer-api.marketmaker.cc`)
-      - traefik.http.routers.harness-analyzer-api.entrypoints=websecure
-      - traefik.http.routers.harness-analyzer-api.tls.certresolver=letsencrypt
+      - traefik.http.routers.harness-analyzer-api-prod.rule=Host(`harness-analyzer-api.marketmaker.cc`)
+      - traefik.http.routers.harness-analyzer-api-prod.entrypoints=websecure
+      - traefik.http.routers.harness-analyzer-api-prod.tls.certresolver=letsencrypt
       - traefik.http.services.harness-analyzer-api.loadbalancer.server.port=3001
 
 networks:
