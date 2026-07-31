@@ -1,0 +1,9 @@
+.git
+.gitmodules
+.manager
+.superpowers
+**/node_modules
+**/dist
+docs
+reference
+graphify-out

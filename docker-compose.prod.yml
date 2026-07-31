@@ -1,0 +1,31 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: harness-analyzer-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3001"
+      HOME: /data
+      AUTH_ISSUER: auth.marketmaker.cc
+      AUTH_JWKS_URL: https://auth.marketmaker.cc/.well-known/jwks.json
+      AUTH_SERVICE_NAME: harness-analyzer
+      CORS_ALLOWED_ORIGINS: https://harness-analyzer.marketmaker.cc
+    volumes:
+      - ./data:/data/.claude-stats
+    networks:
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.harness-analyzer-api.rule=Host(`harness-analyzer-api.marketmaker.cc`)
+      - traefik.http.routers.harness-analyzer-api.entrypoints=websecure
+      - traefik.http.routers.harness-analyzer-api.tls.certresolver=letsencrypt
+      - traefik.http.services.harness-analyzer-api.loadbalancer.server.port=3001
+
+networks:
+  web:
+    external: true
+    name: web
