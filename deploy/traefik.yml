@@ -1,0 +1,23 @@
+http:
+  routers:
+    harness-analyzer-api-http:
+      rule: Host(`harness-analyzer-api.marketmaker.cc`)
+      entryPoints:
+        - web
+      service: harness-analyzer-api
+      middlewares:
+        - redirect-to-https
+    harness-analyzer-api-https:
+      rule: Host(`harness-analyzer-api.marketmaker.cc`)
+      entryPoints:
+        - websecure
+      service: harness-analyzer-api
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    harness-analyzer-api:
+      loadBalancer:
+        servers:
+          - url: http://harness-analyzer-api:3001
+        passHostHeader: true
