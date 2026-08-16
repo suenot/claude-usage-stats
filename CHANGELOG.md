@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-16
+
+### Added
+
+- Added multi-device CLI synchronization with stable private device identities and fleet-wide aggregation.
+- Added a private, range-aware device usage chart with USD, token and session metrics.
+
+### Changed
+
+- Replaced the duplicate landing-page hero logo with telemetry facts and clarified private device-label handling.
+
+### Fixed
+
+- Increased the installation command line height and vertical clearance so glyphs are not clipped.
+
+### Security
+
+- Updated resolved Hono and Nano ID dependencies to patched releases.
+
 ## [0.1.2] - 2026-08-16
 
 ### Fixed
