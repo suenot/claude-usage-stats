@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-08-16
+
+### Fixed
+
+- Made the landing-page CLI installation command a prominent full-width hero strip.
+
 ## [0.1.1] - 2026-08-16
 
 ### Fixed
