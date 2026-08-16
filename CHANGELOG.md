@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-16
+
+### Added
+
+- Added independent sharing controls and public routes for sanitized session and project analytics.
+
+### Security
+
+- Public session and project responses use explicit field allowlists and omit prompts, paths, session identifiers, files, and device metadata.
+
 ## [0.2.0] - 2026-08-16
 
 ### Added
